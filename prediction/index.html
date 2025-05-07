@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glaucoma Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .custom-file-upload {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            left: auto;
+            right: auto;
+        }
+        .custom-file-upload:hover {
+            background-color: #0056b3;
+        }
+        #preview {
+            max-width: 100%;
+            margin-bottom: 20px;
+            display: none;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .loading {
+            color: #333;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Glaucoma Detection</h1>
+        <label for="imageInput" class="custom-file-upload">Choose Image</label>
+        <input type="file" id="imageInput" accept="image/*">
+        <img id="preview" alt="Image Preview">
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        const resultDiv = document.getElementById('result');
+
+        // Показ предварительного просмотра изображения
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+                resultDiv.textContent = '';
+            }
+        });
+
+        // Отправка изображения на сервер
+        imageInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            resultDiv.textContent = 'Processing...';
+            resultDiv.className = 'loading';
+
+            try {
+                const response = await fetch('http://localhost:8081/predict-glaucoma', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <strong>Prediction:</strong> ${data.is_glaucoma ? "Glaucoma": "No Glaucoma"}<br>
+                        <strong>Probability of Glaucoma:</strong> ${data.prob_glaucoma.toFixed(2)}%<br>
+                        <strong>Probability of No Glaucoma:</strong> ${data.prob_no_glaucoma.toFixed(2)}%
+                    `;
+                    resultDiv.className = 'success';
+                } else {
+                    resultDiv.textContent = `Error: ${data.error}`;
+                    resultDiv.className = 'error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `Error: Failed to connect to server`;
+                resultDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

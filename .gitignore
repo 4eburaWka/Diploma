@@ -1,4 +1,5 @@
 venv/
+.venv/
 __pycache__/
 
 eyepac-light-v2-512-jpg/
