@@ -113,7 +113,7 @@
             resultDiv.className = 'loading';
 
             try {
-                const response = await fetch('http://localhost:8081/predict-glaucoma', {
+                const response = await fetch('http://thespace.trade/glaucoma/predict-glaucoma', {
                     method: 'POST',
                     body: formData
                 });
