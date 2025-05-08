@@ -1,4 +1,5 @@
 git pull
+git lfs pull
 
 docker build -t glaucoma/be -f prediction/Dockerfile prediction/
 docker build -t glaucoma/nginx -f prediction/Dockerfile-nginx prediction/
