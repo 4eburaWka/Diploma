@@ -57,6 +57,7 @@ class Predictor:
         if not os.path.exists(weights_path):
             raise FileNotFoundError(f"Weights file not found at {weights_path}")
         
+        print(f"Load weights from {weights_path}")
         checkpoint = torch.load(weights_path, weights_only=False, map_location=self.device)
         
         if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
