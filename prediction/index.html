@@ -91,7 +91,6 @@
         const preview = document.getElementById('preview');
         const resultDiv = document.getElementById('result');
 
-        // Показ предварительного просмотра изображения
         imageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -101,7 +100,6 @@
             }
         });
 
-        // Отправка изображения на сервер
         imageInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -113,7 +111,7 @@
             resultDiv.className = 'loading';
 
             try {
-                const response = await fetch('https://thespace.trade/glaucoma/predict-glaucoma', {
+                const response = await fetch('http://localhost:8081/predict-glaucoma', {
                     method: 'POST',
                     body: formData
                 });
